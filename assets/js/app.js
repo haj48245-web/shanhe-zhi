@@ -309,7 +309,7 @@
           seal: p.abbr || name.slice(0, 1)
         }) +
         '<div class="panel-body">' +
-          (cities.length ? '<div class="city-jump"><span class="city-jump-label">CITIES / 城市</span><div class="city-jump-track">' +
+          (cities.length ? '<div class="city-jump"><span class="city-jump-label">CITIES / 城市 · ' + cities.length + ' 座</span><div class="city-jump-track">' +
             cities.map(function (c) {
               return '<button data-city="' + esc(c.id) + '">' + esc(c.name) + "</button>";
             }).join("") + "</div></div>" : "") +
