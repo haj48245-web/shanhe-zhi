@@ -992,23 +992,29 @@
   }
 
   function enableOffline() {
-    if (!("serviceWorker" in navigator) || !(location.protocol === "https:" || location.hostname === "localhost")) {
+    if (!("serviceWorker" in navigator) || !(location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1")) {
       toast("请通过 GitHub Pages 地址打开后再使用离线缓存");
       return;
     }
+    var all = window.confirm("缓存全部图文约 40MB，建议在校园 Wi-Fi 下进行。\n\n点“确定”缓存全部配图；点“取消”只缓存文字和省级封面。");
     navigator.serviceWorker.ready.then(function (reg) {
-      if (reg.active) reg.active.postMessage({ type: "CACHE_CORE" });
-      toast("正在缓存文字内容，完成后断网也能读…");
+      if (reg.active) reg.active.postMessage({ type: all ? "CACHE_ALL" : "CACHE_CORE" });
+      toast(all ? "正在缓存全部图文，请保持 Wi-Fi 连接…" : "正在缓存文字内容…");
     }).catch(function () {
       toast("离线缓存启动失败，请刷新后重试");
     });
   }
 
   function registerOffline() {
-    if (!("serviceWorker" in navigator) || !(location.protocol === "https:" || location.hostname === "localhost")) return;
+    if (!("serviceWorker" in navigator) || !(location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1")) return;
     navigator.serviceWorker.register("sw.js").catch(function () {});
     navigator.serviceWorker.addEventListener("message", function (e) {
-      if (e.data && e.data.type === "CACHE_DONE") toast("离线缓存完成：流量差也能阅读文字内容");
+      if (!e.data) return;
+      if (e.data.type === "CACHE_PROGRESS") {
+        toast("正在缓存配图 " + e.data.done + " / " + e.data.total + "…");
+      } else if (e.data.type === "CACHE_DONE") {
+        toast(e.data.all ? "全部图文已缓存：断网、流量差也能完整浏览" : "文字内容已缓存：流量差也能阅读");
+      }
     });
   }
 
