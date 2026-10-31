@@ -53,6 +53,7 @@
   var lastHash = null;
   var lastFocused = null;
   var searchIndexCache = null;
+  var searchIndexPromise = null;
   var mobileQuery = window.matchMedia("(max-width: 980px)");
 
   /* ---------------- utils ---------------- */
@@ -730,6 +731,23 @@
     searchIndexCache = base;
     return base;
   }
+  function loadSearchIndex() {
+    if (SEARCH_INDEX && SEARCH_INDEX.length) return Promise.resolve(SEARCH_INDEX);
+    if (searchIndexPromise) return searchIndexPromise;
+    searchIndexPromise = new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = "assets/js/search-index.js";
+      s.async = true;
+      s.onload = function () {
+        SEARCH_INDEX = window.SEARCH_INDEX || [];
+        searchIndexCache = null;
+        resolve(SEARCH_INDEX);
+      };
+      s.onerror = function () { reject(new Error("search index failed")); };
+      document.head.appendChild(s);
+    });
+    return searchIndexPromise;
+  }
   function openSearch() {
     renderSearchDefault();
     openOverlay(els.searchOverlay, els.searchInput);
@@ -744,6 +762,15 @@
       '<div class="search-empty"><strong>搜一座城，或一种文化</strong>例如“元曲四大家”“汝官哥钧定”“湘江入洞庭”“世界文化遗产”</div>';
   }
   function renderSearch(q) {
+    q = q.trim();
+    if (!q) { renderSearchDefault(); state.searchItems = []; return; }
+    loadSearchIndex().then(function () {
+      renderSearchResults(q);
+    }).catch(function () {
+      els.searchResults.innerHTML = '<div class="search-empty"><strong>搜索索引加载失败</strong>请刷新页面后重试。</div>';
+    });
+  }
+  function renderSearchResults(q) {
     q = q.trim();
     if (!q) { renderSearchDefault(); state.searchItems = []; return; }
     var index = buildSearchIndex();
@@ -842,6 +869,7 @@
         else if (a === "provinces") { e.preventDefault(); openProvinces(); }
         else if (a === "topics") { e.preventDefault(); openTopics(); }
         else if (a === "about") { e.preventDefault(); openAbout(); }
+        else if (a === "offline") { e.preventDefault(); enableOffline(); }
         else if (a === "atlas") { e.preventDefault(); closeAllOverlays(); window.scrollTo({ top: 0, behavior: "smooth" }); }
         return;
       }
@@ -946,6 +974,44 @@
     els.mobileMapBtn.classList.toggle("is-visible", show);
   }
 
+  var toastTimer = null;
+  function toast(message) {
+    var el = document.getElementById("atlas-toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "atlas-toast";
+      el.className = "toast";
+      el.setAttribute("role", "status");
+      el.setAttribute("aria-live", "polite");
+      document.body.appendChild(el);
+    }
+    el.textContent = message;
+    el.classList.add("is-visible");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove("is-visible"); }, 3600);
+  }
+
+  function enableOffline() {
+    if (!("serviceWorker" in navigator) || !(location.protocol === "https:" || location.hostname === "localhost")) {
+      toast("请通过 GitHub Pages 地址打开后再使用离线缓存");
+      return;
+    }
+    navigator.serviceWorker.ready.then(function (reg) {
+      if (reg.active) reg.active.postMessage({ type: "CACHE_CORE" });
+      toast("正在缓存文字内容，完成后断网也能读…");
+    }).catch(function () {
+      toast("离线缓存启动失败，请刷新后重试");
+    });
+  }
+
+  function registerOffline() {
+    if (!("serviceWorker" in navigator) || !(location.protocol === "https:" || location.hostname === "localhost")) return;
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+    navigator.serviceWorker.addEventListener("message", function (e) {
+      if (e.data && e.data.type === "CACHE_DONE") toast("离线缓存完成：流量差也能阅读文字内容");
+    });
+  }
+
   /* ---------------- boot ---------------- */
   function init() {
     if (window.CHINA_MAP && MAP.features.length) buildMap();
@@ -954,6 +1020,7 @@
     renderTopics();
     bindPanel();
     bindGlobal();
+    registerOffline();
     route(true);
     try {
       var params = new URLSearchParams(window.location.search);
