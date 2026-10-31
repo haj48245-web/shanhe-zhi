@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4efe5" />
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+  <meta name="description" content="山河志：一张可以点开的中国人文旅行地图。34 个省级行政区，384 座城市，上千个文化坐标。" />
+  <title>山河志 · 中国人文旅行图鉴</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#panel">跳到内容面板</a>
+
+  <header class="topbar">
+    <a class="brand" href="#/" aria-label="山河志首页">
+      <span class="brand-seal" aria-hidden="true">山<br>河</span>
+      <span class="brand-word">
+        <strong>山河志</strong>
+        <small>中国人文旅行图鉴</small>
+      </span>
+    </a>
+
+    <nav class="topnav" aria-label="主导航">
+      <button class="navlink is-active" data-action="atlas">寻省</button>
+      <button class="navlink" data-action="provinces">省份索引</button>
+      <button class="navlink" data-action="topics">文化专题</button>
+      <button class="navlink" data-action="about">关于</button>
+    </nav>
+
+    <div class="top-actions">
+      <button class="search-trigger" data-action="search" aria-label="搜索省市、景点与文化">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+        <span>搜城市、古建、文化…</span>
+        <kbd>⌘ K</kbd>
+      </button>
+      <button class="icon-btn mobile-only" data-action="provinces" aria-label="打开省份索引">
+        <svg class="icon" aria-hidden="true"><use href="#i-grid"></use></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="atlas" id="atlas">
+    <section class="map-stage" aria-label="中国省级行政区地图">
+      <div class="map-kicker">
+        <span class="eyebrow"><i></i> 一张可以点开的中国地图</span>
+        <h1>一省一山河<br><em>一城一千年</em></h1>
+        <p>从省界出发，进入城市，再抵达一座古建、一条河、一门手艺背后的文明现场。</p>
+      </div>
+
+      <div class="map-frame" id="map-frame">
+        <div class="map-watermark" aria-hidden="true">中國</div>
+        <svg id="china-map" viewBox="0 0 1000 760" role="group" aria-label="中国地图，点击省份查看详情"></svg>
+        <div class="map-tooltip" id="map-tooltip" role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="map-meta">
+        <div class="legend" aria-label="地图图例">
+          <span><i style="--c:#b56a4f"></i>华北</span>
+          <span><i style="--c:#5e7d6d"></i>东北</span>
+          <span><i style="--c:#8a9a5b"></i>华东</span>
+          <span><i style="--c:#c08a3e"></i>华中</span>
+          <span><i style="--c:#4f7d7a"></i>华南</span>
+          <span><i style="--c:#8b6b8f"></i>西南</span>
+          <span><i style="--c:#b08a5a"></i>西北</span>
+          <span><i style="--c:#b3544c"></i>港澳台</span>
+        </div>
+        <p class="map-hint"><span class="pulse-dot"></span> 点击省份 · 滚轮浏览内容</p>
+      </div>
+
+      <div class="map-controls" aria-label="地图控制">
+        <button class="icon-btn" data-map-action="reset" aria-label="重置地图视图" title="重置地图">
+          <svg class="icon" aria-hidden="true"><use href="#i-compass"></use></svg>
+        </button>
+        <button class="icon-btn" data-action="provinces" aria-label="打开省份索引" title="省份索引">
+          <svg class="icon" aria-hidden="true"><use href="#i-grid"></use></svg>
+        </button>
+      </div>
+
+      <div class="map-caption">
+        <span>34 个省级行政区</span>
+        <span>384 座城市</span>
+        <span>1,007 文化坐标</span>
+      </div>
+    </section>
+
+    <aside class="panel" id="panel" aria-live="polite" aria-label="省份与城市详情">
+      <div class="panel-inner" id="panel-inner"></div>
+    </aside>
+  </main>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <section class="overlay" id="search-overlay" hidden aria-modal="true" role="dialog" aria-label="全站搜索">
+    <div class="search-sheet">
+      <div class="search-head">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+        <input id="search-input" type="search" placeholder="搜城市、古建、山水、非遗、称号…" autocomplete="off" />
+        <button class="close-btn" data-close="search-overlay" aria-label="关闭搜索">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+      <div class="search-body" id="search-results"></div>
+      <div class="search-foot">
+        <span><kbd>↑</kbd><kbd>↓</kbd> 选择</span>
+        <span><kbd>↵</kbd> 打开</span>
+        <span><kbd>esc</kbd> 关闭</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="overlay" id="provinces-overlay" hidden aria-modal="true" role="dialog" aria-label="省份索引">
+    <div class="sheet sheet-wide">
+      <div class="sheet-head">
+        <div>
+          <span class="eyebrow">Index / 省域</span>
+          <h2>三十四个省级行政区</h2>
+        </div>
+        <button class="close-btn" data-close="provinces-overlay" aria-label="关闭省份索引">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+      <div class="province-index" id="province-index"></div>
+    </div>
+  </section>
+
+  <section class="overlay" id="topics-overlay" hidden aria-modal="true" role="dialog" aria-label="文化专题">
+    <div class="sheet sheet-wide">
+      <div class="sheet-head">
+        <div>
+          <span class="eyebrow">Long reads / 深读</span>
+          <h2>把旅行，读成文明史</h2>
+        </div>
+        <button class="close-btn" data-close="topics-overlay" aria-label="关闭文化专题">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+      <div class="topic-grid" id="topic-grid"></div>
+    </div>
+  </section>
+
+  <section class="overlay" id="about-overlay" hidden aria-modal="true" role="dialog" aria-label="关于山河志">
+    <div class="sheet sheet-narrow">
+      <div class="sheet-head">
+        <div>
+          <span class="eyebrow">About / 关于</span>
+          <h2>山河志</h2>
+        </div>
+        <button class="close-btn" data-close="about-overlay" aria-label="关闭关于">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+      <div class="about-copy">
+        <p>「山河志」是一份中国人文旅行图鉴。它不按热门榜单排列，而是从省域、城市、地理与文化坐标之间的关系出发，帮助第一次了解中国的人建立一张可以反复漫游的认知地图。</p>
+        <p>内容涵盖古建、遗址、山水、博物馆、非遗、民俗、风物、名人与“中国/世界之最”。每一个条目都尽量回答三个问题：它是什么，它为什么重要，它和更大的历史、地理与文明脉络有什么关系。</p>
+        <h3>使用方式</h3>
+        <ul>
+          <li>点击地图上的省份，先读全省概况，再进入城市。</li>
+          <li>在城市页按类别筛选，点开“文化深读”看背后的制度、人物、流派与典故。</li>
+          <li>用顶部搜索，或 <kbd>⌘K</kbd> / <kbd>Ctrl K</kbd> 直接找一座城、一座山、一门手艺。</li>
+          <li>“文化专题”提供跨省的横向阅读，例如元曲、官窑、五岳、长江水系。</li>
+        </ul>
+        <h3>资料与图片</h3>
+        <p>文字为编辑整理与科普写作，参考公开的史志、博物馆、世界遗产与地方文旅资料；图片来自公开网络检索，仅作学习与展示，版权归原作者所有。称号、年代与遗产信息会随官方更新而变化，出行前请以当地文旅部门与景区公告为准。</p>
+        <p class="about-mark">山河远阔，行而知之。</p>
+      </div>
+    </div>
+  </section>
+
+  <button class="mobile-map-btn" id="mobile-map-btn" aria-label="回到地图">
+    <svg class="icon" aria-hidden="true"><use href="#i-map"></use></svg>
+    <span>地图</span>
+  </button>
+
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.2 4.2"></path></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"></path></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"></path></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M20 12H5M11 6l-6 6 6 6"></path></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"></rect><rect x="14" y="4" width="6" height="6"></rect><rect x="4" y="14" width="6" height="6"></rect><rect x="14" y="14" width="6" height="6"></rect></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z"></path></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="M4 6l6-2 4 2 6-2v14l-6 2-4-2-6 2V6z"></path><path d="M10 4v14M14 6v14"></path></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z"></path><path d="M5 17a3 3 0 0 1 3-3h11"></path></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 6.2L20 12l-6.2 1.8L12 20l-1.8-6.2L4 12l6.2-1.8L12 3z"></path></symbol>
+    <symbol id="i-mountain" viewBox="0 0 24 24"><path d="M3 19L9 7l3 5 2-3 7 10H3z"></path></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"></path><circle cx="12" cy="10" r="2"></circle></symbol>
+  </svg>
+
+  <script src="assets/js/map-data.js"></script>
+  <script src="assets/js/manifest.js"></script>
+  <script src="assets/js/topics.js"></script>
+  <script src="assets/js/search-index.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
