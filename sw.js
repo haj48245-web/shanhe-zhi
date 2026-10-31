@@ -1,8 +1,10 @@
-/* 山河志离线缓存：首次在 Wi-Fi 打开后，文字与省级封面可离线阅读。 */
+/* 山河志离线缓存：首次在 Wi-Fi 打开后，文字、省级封面与全部配图可离线阅读。 */
 importScripts('./assets/js/offline-manifest.js');
+importScripts('./assets/js/image-manifest.js');
 
-const CACHE = 'shanhe-zhi-v4';
+const CACHE = 'shanhe-zhi-v5';
 const CORE = self.OFFLINE_CORE || [];
+const IMAGES = self.OFFLINE_IMAGES || [];
 const INDEX = new URL('index.html', self.registration.scope).href;
 
 async function cacheCore() {
@@ -13,6 +15,27 @@ async function cacheCore() {
       await cache.add(new Request(url, { cache: 'reload' }));
     } catch (e) { /* 单张封面失败不影响整体离线 */ }
   }));
+}
+
+async function cacheAllImages(source) {
+  const cache = await caches.open(CACHE);
+  let next = 0, done = 0;
+  const total = IMAGES.length;
+  const worker = async () => {
+    while (next < total) {
+      const i = next++;
+      try {
+        const url = new URL(IMAGES[i], self.registration.scope).href;
+        await cache.add(new Request(url, { cache: 'reload' }));
+      } catch (e) { /* 单张失败继续 */ }
+      done++;
+      if (done % 40 === 0 || done === total) {
+        if (source) source.postMessage({ type: 'CACHE_PROGRESS', done: done, total: total });
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: 6 }, () => worker()));
+  if (source) source.postMessage({ type: 'CACHE_DONE', all: true });
 }
 
 self.addEventListener('install', (event) => {
@@ -37,6 +60,8 @@ self.addEventListener('message', (event) => {
       await cacheCore();
       if (event.source) event.source.postMessage({ type: 'CACHE_DONE' });
     })());
+  } else if (data.type === 'CACHE_ALL') {
+    event.waitUntil(cacheAllImages(event.source));
   }
 });
 
