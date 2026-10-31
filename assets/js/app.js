@@ -238,6 +238,10 @@
           "<div><strong>" + totalCities + "</strong><span>城市与地区</span></div>" +
           "<div><strong>" + itemTotal + "</strong><span>文化坐标</span></div>" +
         "</div>" +
+        '<div class="offline-card">' +
+          '<div><strong>流量不稳？</strong><span>先在校园 Wi-Fi 缓存全部图文，之后断网、流量差也能完整浏览。</span></div>' +
+          '<button class="btn" data-action="offline">离线缓存</button>' +
+        "</div>" +
         '<div class="empty-suggestions">' +
           '<div class="mini-heading">如果不知道从哪里开始</div>' +
           '<div class="suggestion-list">' +
