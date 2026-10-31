@@ -610,13 +610,11 @@ kbd {
 }
 .city-jump-track {
   display: flex;
+  flex-wrap: wrap;
   gap: 5px;
-  overflow-x: auto;
-  scrollbar-width: none;
+  overflow: visible;
   padding-bottom: 2px;
-  mask-image: linear-gradient(to right, #000 92%, transparent);
 }
-.city-jump-track::-webkit-scrollbar { display: none; }
 .city-jump-track button {
   flex: none;
   padding: 4px 8px;
