@@ -451,6 +451,19 @@ kbd {
 .empty-stats div { background: var(--paper-light); padding: 16px 10px 15px; }
 .empty-stats strong { display: block; font-family: var(--serif); font-size: 25px; line-height: 1.1; font-weight: 600; }
 .empty-stats span { display: block; margin-top: 6px; font-size: 9.5px; color: var(--muted); letter-spacing: .12em; }
+.offline-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 0 24px;
+  padding: 11px 13px;
+  border: 1px dashed var(--line-strong);
+  background: rgba(167, 68, 48, .035);
+}
+.offline-card strong { display: block; font-size: 11px; letter-spacing: .06em; color: var(--cinnabar); }
+.offline-card span { display: block; margin-top: 3px; font-size: 10px; line-height: 1.7; color: var(--muted); }
+.offline-card .btn { flex: none; font-size: 10px; padding: 7px 10px; }
 
 .empty-suggestions { margin-top: auto; }
 .mini-heading {
