@@ -1249,6 +1249,28 @@ kbd {
 }
 .mobile-map-btn .icon { width: 15px; height: 15px; }
 
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  z-index: 200;
+  transform: translate(-50%, 12px);
+  max-width: min(86vw, 460px);
+  padding: 10px 16px;
+  background: rgba(28, 36, 32, .94);
+  color: var(--paper-light);
+  border: 1px solid rgba(255, 255, 255, .12);
+  box-shadow: var(--shadow-soft);
+  font-size: 11.5px;
+  line-height: 1.7;
+  letter-spacing: .03em;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s, transform .25s;
+}
+.toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
 /* ---------------- responsive ---------------- */
 @media (max-width: 1180px) {
   :root { --panel-w: 450px; }
